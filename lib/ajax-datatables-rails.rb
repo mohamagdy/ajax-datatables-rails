@@ -18,7 +18,7 @@ class AjaxDatatablesRails
 
   def as_json(options = {})
     {
-      sEcho: params[:sEcho].to_i,
+      sEcho: @view.params[:sEcho].to_i,
       iTotalRecords: @model_name.count,
       iTotalDisplayRecords: filtered_record_count,
       aaData: data
@@ -52,28 +52,28 @@ private
   end
 
   def search_records(records)
-    if params[:sSearch].present?
+    if @view.params[:sSearch].present?
       query = @searchable_columns.map do |column|
         "#{column} LIKE :search"
       end.join(" OR ")
-      records = records.where(query, search: "%#{params[:sSearch]}%")
+      records = records.where(query, search: "%#{@view.params[:sSearch]}%")
     end
     return records
   end
 
   def page
-    params[:iDisplayStart].to_i/per_page + 1
+    @view.params[:iDisplayStart].to_i/per_page + 1
   end
 
   def per_page
-    params[:iDisplayLength].to_i > 0 ? params[:iDisplayLength].to_i : 10
+    @view.params[:iDisplayLength].to_i > 0 ? @view.params[:iDisplayLength].to_i : 10
   end
 
   def sort_column
-    @columns[params[:iSortCol_0].to_i]
+    @columns[@view.params[:iSortCol_0].to_i]
   end
 
   def sort_direction
-    params[:sSortDir_0] == "desc" ? "DESC" : "ASC"
+    @view.params[:sSortDir_0] == "desc" ? "DESC" : "ASC"
   end
 end
